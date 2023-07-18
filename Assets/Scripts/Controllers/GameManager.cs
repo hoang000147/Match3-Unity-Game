@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
     public event Action<eStateGame> StateChangedAction = delegate { };
 
@@ -35,23 +35,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    [SerializeField] private GameDB m_gameDB;
+    [SerializeField] private UIMainManager m_uiMenu;
+
 
     private GameSettings m_gameSettings;
-
-
     private BoardController m_boardController;
-
-    private UIMainManager m_uiMenu;
-
     private LevelCondition m_levelCondition;
 
-    private void Awake()
+    public GameDB GameDB => m_gameDB;
+
+    protected override void Awake()
     {
+        base.Awake();
+
         State = eStateGame.SETUP;
 
         m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
 
-        m_uiMenu = FindObjectOfType<UIMainManager>();
+        // m_uiMenu = FindObjectOfType<UIMainManager>();
         m_uiMenu.Setup(this);
     }
 

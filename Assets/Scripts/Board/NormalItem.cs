@@ -22,35 +22,25 @@ public class NormalItem : Item
         ItemType = type;
     }
 
-    protected override string GetPrefabName()
+    public override void SetView()
     {
-        string prefabname = string.Empty;
-        switch (ItemType)
-        {
-            case eNormalType.TYPE_ONE:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_ONE;
-                break;
-            case eNormalType.TYPE_TWO:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_TWO;
-                break;
-            case eNormalType.TYPE_THREE:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_THREE;
-                break;
-            case eNormalType.TYPE_FOUR:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_FOUR;
-                break;
-            case eNormalType.TYPE_FIVE:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_FIVE;
-                break;
-            case eNormalType.TYPE_SIX:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_SIX;
-                break;
-            case eNormalType.TYPE_SEVEN:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_SEVEN;
-                break;
-        }
+        int prefabIndex = GetPrefabIndex();
 
-        return prefabname;
+        GameObject normalItem = GameObject.Instantiate(GameManager.Instance.GameDB.NormalItemPrefab);
+
+        if (normalItem)
+        {
+            var spriteRenderer = normalItem.GetComponent<SpriteRenderer>();
+            if (spriteRenderer)
+                spriteRenderer.sprite = GameManager.Instance.GameDB.NormalItemDB.SpritesList[prefabIndex];
+
+            View = normalItem.transform;
+        }
+    }
+
+    protected override int GetPrefabIndex()
+    {
+        return (int)ItemType;
     }
 
     internal override bool IsSameType(Item other)

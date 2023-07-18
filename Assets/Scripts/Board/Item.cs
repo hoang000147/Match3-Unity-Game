@@ -9,24 +9,17 @@ public class Item
 {
     public Cell Cell { get; private set; }
 
-    public Transform View { get; private set; }
+    public Transform View { get; protected set; }
 
 
     public virtual void SetView()
     {
-        string prefabname = GetPrefabName();
-
-        if (!string.IsNullOrEmpty(prefabname))
-        {
-            GameObject prefab = Resources.Load<GameObject>(prefabname);
-            if (prefab)
-            {
-                View = GameObject.Instantiate(prefab).transform;
-            }
-        }
+        
     }
 
     protected virtual string GetPrefabName() { return string.Empty; }
+
+    protected virtual int GetPrefabIndex() { return 0; }
 
     public virtual void SetCell(Cell cell)
     {
