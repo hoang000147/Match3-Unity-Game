@@ -25,6 +25,8 @@ public class Board
 
     private int m_matchMin;
 
+    private Dictionary<NormalItem.eNormalType, int> cellItemTypesDict;
+
     public Board(Transform transform, GameSettings gameSettings)
     {
         m_root = transform;
@@ -35,6 +37,11 @@ public class Board
         this.boardSizeY = gameSettings.BoardSizeY;
 
         m_cells = new Cell[boardSizeX, boardSizeY];
+        cellItemTypesDict = new Dictionary<NormalItem.eNormalType, int>();
+        foreach (var type in Enum.GetValues(typeof(NormalItem.eNormalType)))
+        {
+            cellItemTypesDict.Add((NormalItem.eNormalType)type, 0);
+        }
 
         CreateBoard();
     }
@@ -70,6 +77,11 @@ public class Board
             }
         }
 
+    }
+
+    public void DecreaseItemTypeCount(NormalItem.eNormalType itemType, int itemCount)
+    {
+        cellItemTypesDict[itemType] -= itemCount;
     }
 
     internal void Fill()
@@ -147,7 +159,22 @@ public class Board
 
                 NormalItem item = new NormalItem();
 
-                item.SetType(Utils.GetRandomNormalType());
+                List<NormalItem.eNormalType> excludedItemTypes = cell.GetItemTypesInNeighbours();
+                List<NormalItem.eNormalType> itemTypes = Utils.GetRandomNormalTypesExcept(excludedItemTypes.ToArray());
+                var itemTypeCount = cellItemTypesDict[itemTypes[0]];
+                var itemType = itemTypes[0];
+                foreach (var type in itemTypes)
+                {
+                    if (cellItemTypesDict[type] < itemTypeCount)
+                    {
+                        itemType = type;
+                        itemTypeCount = cellItemTypesDict[type];
+                    }
+                }
+
+                item.SetType(itemType);
+                cellItemTypesDict[itemType] += 1;
+
                 item.SetView();
                 item.SetViewRoot(m_root);
 

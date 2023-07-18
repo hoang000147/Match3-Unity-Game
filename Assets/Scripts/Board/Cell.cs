@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Cell : MonoBehaviour
@@ -31,6 +32,40 @@ public class Cell : MonoBehaviour
         return BoardX == other.BoardX && Mathf.Abs(BoardY - other.BoardY) == 1 ||
             BoardY == other.BoardY && Mathf.Abs(BoardX - other.BoardX) == 1;
     }
+
+    public List<NormalItem.eNormalType> GetItemTypesInNeighbours()
+    {
+        List<NormalItem.eNormalType> results = new List<NormalItem.eNormalType>();
+
+        if (IsCellValid(NeighbourBottom))
+            results.Add(GetNormalItemTypeFromCell(NeighbourBottom));
+        if (IsCellValid(NeighbourUp))
+            results.Add(GetNormalItemTypeFromCell(NeighbourUp));
+        if (IsCellValid(NeighbourRight))
+            results.Add(GetNormalItemTypeFromCell(NeighbourRight));
+        if (IsCellValid(NeighbourLeft))
+            results.Add(GetNormalItemTypeFromCell(NeighbourLeft));
+
+        return results;
+    }
+
+    private bool IsCellValid(Cell cell)
+    {
+        if (cell == null || cell.Item == null)
+            return false;
+
+        if (!(cell.Item is NormalItem))
+            return false;
+
+        return true;
+    }
+
+    private NormalItem.eNormalType GetNormalItemTypeFromCell(Cell cell)
+    {
+        NormalItem normalItem = (NormalItem)cell.Item;
+        return normalItem.ItemType;
+    }
+
 
 
     public void Free()

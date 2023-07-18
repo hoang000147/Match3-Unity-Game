@@ -222,6 +222,11 @@ public class BoardController : MonoBehaviour
         for (int i = 0; i < matches.Count; i++)
         {
             matches[i].ExplodeItem();
+            if (matches[i].Item != null && matches[i].Item is NormalItem)
+            {
+                NormalItem normalItem = (NormalItem)matches[i].Item;
+                m_board.DecreaseItemTypeCount(normalItem.ItemType, 1);
+            }
         }
 
         if(matches.Count > m_gameSettings.MatchesMin)
