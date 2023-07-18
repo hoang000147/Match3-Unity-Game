@@ -38,12 +38,14 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private GameDB m_gameDB;
     [SerializeField] private UIMainManager m_uiMenu;
 
+    public GameDB GameDB => m_gameDB;
 
     private GameSettings m_gameSettings;
     private BoardController m_boardController;
     private LevelCondition m_levelCondition;
 
-    public GameDB GameDB => m_gameDB;
+    private eLevelMode m_currentLevelMode;
+
 
     protected override void Awake()
     {
@@ -85,6 +87,8 @@ public class GameManager : Singleton<GameManager>
 
     public void LoadLevel(eLevelMode mode)
     {
+        m_currentLevelMode = mode;
+
         m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
         m_boardController.StartGame(this, m_gameSettings);
 
@@ -107,6 +111,33 @@ public class GameManager : Singleton<GameManager>
     public void GameOver()
     {
         StartCoroutine(WaitBoardController());
+    }
+
+    public void RestartLevel()
+    {
+        StartCoroutine(RestartLevelRoutine());
+    }
+
+    private IEnumerator RestartLevelRoutine()
+    {
+        State = eStateGame.GAME_STARTED;
+        
+        while (m_boardController.IsBusy)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
+        State = eStateGame.GAME_OVER;
+
+        if (m_levelCondition != null)
+        {
+            m_levelCondition.ConditionCompleteEvent -= GameOver;
+            Destroy(m_levelCondition);
+            m_levelCondition = null;
+        }
+
+        ClearLevel();
+        LoadLevel(m_currentLevelMode);
     }
 
     internal void ClearLevel()
